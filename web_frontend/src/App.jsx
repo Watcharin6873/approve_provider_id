@@ -46,7 +46,7 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter basename='/approve_provider_id/'>
         <Routes>
           <Route path='/' element={<Login />} />
           {/* Responder Page */}

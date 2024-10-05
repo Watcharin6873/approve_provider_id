@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  "homepage": "/approve_provider_id",
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@emotion/react": "^11.13.3",
