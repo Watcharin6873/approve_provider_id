@@ -15,6 +15,7 @@ import dayTH from "dayjs/locale/th"
 import buddhistEra from 'dayjs/plugin/buddhistEra'
 import th from 'antd/es/date-picker/locale/th_TH'
 import { ToastContainer, toast } from 'react-toastify'
+import useTitle from '../../utills/useTitle'
 dayjs.locale(dayTH);
 
 dayjs.extend(buddhistEra);
@@ -23,6 +24,7 @@ const { TextArea } = Input
 
 function AddToken() {
 
+    useTitle('เพิ่ม ClientID & Secret key')
     const { user } = useSelector((state) => ({ ...state }))
     const [collapsed, setCollapsed] = useState(false)
     const [formAddToken] = Form.useForm()
@@ -64,54 +66,74 @@ function AddToken() {
 
     const dataSource = searchQuery.map((item) => ({
         ...item,
-        key: item.req_id
+        key: item.req_id,
+        size: 13
     }))
 
     const columnFilter = [
         {
-            title: 'รหัสหน่วยบริการ',
+            title: 'Hcode',
             dataIndex: 'req_hospital_code',
             align: 'center',
+            render: (req_hospital_code, record) =>
+                <>
+                    <span style={{ fontSize: record.size }}>{req_hospital_code}</span>
+                </>
         },
         {
             title: 'หน่วยบริการ',
             dataIndex: 'hospital_name',
-            align: 'center'
+            align: 'center',
+            render: (hospital_name, record) =>
+                <>
+                    <span style={{ fontSize: record.size }}>{hospital_name}</span>
+                </>
         },
         {
             title: 'ชื่อ Service',
             dataIndex: 'req_service_name',
-            align: 'center'
+            align: 'center',
+            render: (req_service_name, record) =>
+                <>
+                    <span style={{ fontSize: record.size }}>{req_service_name}</span>
+                </>
         },
         {
             title: 'จุดประสงค์',
             dataIndex: 'req_objective',
-            align: 'center'
+            align: 'center',
+            render: (req_objective, record) =>
+                <>
+                    <span style={{ fontSize: record.size }}>{req_objective}</span>
+                </>
         },
         {
             title: 'วันที่',
             dataIndex: 'req_date',
             align: 'center',
-            render: (req_date) =>
+            width: 100,
+            render: (req_date, record) =>
                 <>
-                    {dayjs(req_date).locale('th').format('DD MMM BB')}
+                    <span style={{ fontSize: record.size }}>
+                        {dayjs(req_date).locale('th').format('DD MMM BB')}
+                    </span>
                 </>
         },
         {
             title: 'สถานะ',
             dataIndex: 'req_status',
             align: 'center',
-            render: (req_status) =>
+            render: (req_status, record) =>
                 <>
                     {
                         req_status == '1'
-                            ? <span style={{ color: '#ffc733' }}>กำลังดำเนินการ</span>
+                            ? <span style={{ color: '#ffc733', fontSize: record.size }}>กำลังดำเนินการ</span>
                             : req_status == '2'
-                                ? <span style={{ color: '#3383ff' }}>เพิ่ม Client ID & Secret key แล้ว</span>
+                                ? <span style={{ color: '#3383ff', fontSize: record.size }}>เพิ่ม Client ID & Secret key แล้ว</span>
                                 : req_status == '3'
-                                    ? <span style={{ color: 'green' }}>ส่ง Client ID & Secret key ทางอีเมลแล้ว</span>
+                                    ? <span style={{ color: 'green', fontSize: record.size }}>ส่ง Client ID & Secret key ทางอีเมลแล้ว</span>
                                     : req_status == '4'
-                                        ? <span style={{ color: '#c72d00' }}>ยกเลิก Client ID & Secret key นี้แล้ว</span>
+                                        ? <span style={{ color: '#c72d00', fontSize: record.size }}>ยกเลิก Client ID & Secret key นี้แล้ว</span>
                                         : ''
                     }
                 </>
@@ -119,12 +141,12 @@ function AddToken() {
         {
             title: 'การจัดการ',
             align: 'center',
-            render: (req_id) =>
+            render: (req_id, record) =>
                 <>
                     <Button
                         size='small'
                         onClick={() => showAddTokenModal(req_id)}
-                        style={{ color: '#ef8c16' }}
+                        style={{ color: '#ef8c16', fontSize: record.size }}
                     >
                         <SettingFilled /> เพิ่ม Token
                     </Button>
@@ -181,14 +203,14 @@ function AddToken() {
         }
         console.log(values)
         updateClientIDSecretKey(user.token, requestDetail.req_id, values)
-            .then(res=>{
+            .then(res => {
                 toast.success(res.data, {
-                    theme:'colored'
+                    theme: 'colored'
                 })
                 setAddTokenModal(false)
                 loadListRequest(user.token)
             })
-            .catch(err=>{
+            .catch(err => {
                 toast.error(err)
                 console.log(err)
             })

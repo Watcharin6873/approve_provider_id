@@ -7,10 +7,12 @@ import { login } from '../../function/Auth';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { CircularProgress } from '@mui/material';
+import useTitle from '../../utills/useTitle';
 
 
 function Login() {
 
+    useTitle('ล็อกอินเข้าสู่ระบบ')
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)

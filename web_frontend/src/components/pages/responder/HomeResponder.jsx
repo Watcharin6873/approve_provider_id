@@ -10,12 +10,14 @@ import "dayjs/locale/th"
 import buddhistEra from 'dayjs/plugin/buddhistEra'
 import { ExclamationCircleFilled, EyeTwoTone } from '@ant-design/icons'
 import { SearchOutlined } from '@mui/icons-material'
+import useTitle from '../../utills/useTitle'
 
 dayjs.extend(buddhistEra);
 const { Content } = Layout
 
 function HomeResponder() {
 
+  useTitle('หน้าแรก')
   const { user } = useSelector((state) => ({ ...state }))
   const [collapsed, setCollapsed] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -53,65 +55,101 @@ function HomeResponder() {
 
   const dataSource = searchQuery.map((item) => ({
     ...item,
-    key: item.req_id
+    key: item.req_id,
+    size: 13,
   }))
 
   const columnFilter = [
     {
-      title: 'รหัสหน่วยบริการ',
+      title: 'Hcode',
       dataIndex: 'req_hospital_code',
       align: 'center',
+      render: (req_hospital_code, record) =>
+        <>
+          <span
+            style={{ fontSize: record.size }}
+          >
+            {req_hospital_code}
+          </span>
+        </>
     },
     {
       title: 'หน่วยบริการ',
       dataIndex: 'hospital_name',
-      align: 'center'
+      align: 'center',
+      render: (hospital_name, record) =>
+        <>
+          <span
+            style={{ fontSize: record.size }}
+          >
+            {hospital_name}
+          </span>
+        </>
     },
     {
       title: 'ชื่อ Service',
       dataIndex: 'req_service_name',
-      align: 'center'
+      align: 'center',
+      render: (req_service_name, record) =>
+        <>
+          <span
+            style={{ fontSize: record.size }}
+          >
+            {req_service_name}
+          </span>
+        </>
     },
     {
       title: 'จุดประสงค์',
       dataIndex: 'req_objective',
-      align: 'center'
+      align: 'center',
+      render: (req_objective, record) =>
+        <>
+          <span
+            style={{ fontSize: record.size }}
+          >
+            {req_objective}
+          </span>
+        </>
     },
     {
       title: 'วันที่',
       dataIndex: 'req_date',
       align: 'center',
-      render: (req_date) =>
+      width: 100,
+      render: (req_date, record) =>
         <>
-          {dayjs(req_date).locale('th').format('DD MMM BB')}
+          <span style={{ fontSize: record.size }}>
+            {dayjs(req_date).locale('th').format('DD MMM BB')}
+          </span>
         </>
     },
     {
       title: 'สถานะ',
       dataIndex: 'req_status',
       align: 'center',
-      render: (req_status) =>
+      render: (req_status, record) =>
         <>
           {
             req_status == '1'
-              ? <span style={{ color: '#ffc733' }}>กำลังดำเนินการ</span>
+              ? <span style={{ color: '#ffc733', fontSize: record.size }}>กำลังดำเนินการ</span>
               : req_status == '2'
-                ? <span style={{ color: '#3383ff' }}>เพิ่ม Client ID & Secret key แล้ว</span>
+                ? <span style={{ color: '#3383ff', fontSize: record.size }}>เพิ่ม Client ID & Secret key แล้ว</span>
                 : req_status == '3'
-                  ? <span style={{ color: 'green' }}>ส่ง Client ID & Secret key ทางอีเมลแล้ว</span>
+                  ? <span style={{ color: 'green', fontSize: record.size }}>ส่ง Client ID & Secret key ทางอีเมลแล้ว</span>
                   : req_status == '4'
-                    ? <span style={{ color: '#c72d00' }}>ยกเลิก Client ID & Secret key นี้แล้ว</span>
+                    ? <span style={{ color: '#c72d00', fontSize: record.size }}>ยกเลิก Client ID & Secret key นี้แล้ว</span>
                     : ''
           }
         </>
     },
     {
-      title: 'ดูรายละเอียด',
+      title: 'ดูข้อมูล',
       align: 'center',
       render: (req_id) =>
         <>
           <Button type='link' size='small' onClick={() => showDetailModal(req_id)}>
-            <EyeTwoTone style={{ fontSize: '24px' }} />
+            <EyeTwoTone style={{ fontSize: '16px' }} />
           </Button>
         </>
     }
@@ -181,7 +219,7 @@ function HomeResponder() {
                             marginRight: 20
                           }}
                         >
-                          <Input 
+                          <Input
                             placeholder='ค้นหาด้วยรหัสหน่วยบริการ...'
                             onChange={handleFilter}
                             prefix={<SearchOutlined />}
