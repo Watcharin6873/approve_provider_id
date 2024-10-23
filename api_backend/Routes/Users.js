@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const {
     createUser, 
+    createUserByProviderID,
     getListUsers,
     getUserByID,
     updateUser,
@@ -14,6 +15,8 @@ const { auth, approverCheck } = require('../Middleware/Auth')
 
 
 router.post('/createUser',auth, createUser)
+
+router.post('/createUserByProviderID', createUserByProviderID)
 
 router.get('/getListUsers',auth, getListUsers)
 

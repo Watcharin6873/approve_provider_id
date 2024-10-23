@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Col, Row, Button, Form, Input, Modal, Radio, Space } from 'antd';
+import { LockOutlined, UserOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { Col, Row, Button, Form, Input, Modal, Radio, Space, Select, DatePicker } from 'antd';
 import providerid from '../../../assets/Plogo-f6506bc1.png';
-import { login, getTokenHealthID, getTokenProviderID, getProviderProfile, loginByProviderId } from '../../function/Auth';
+import { 
+    login, 
+    getTokenHealthID, 
+    getTokenProviderID, 
+    getProviderProfile, 
+    loginByProviderId, 
+    createUserByProviderID 
+} from '../../function/Auth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { CircularProgress } from '@mui/material';
 import useTitle from '../../utills/useTitle';
+import dayjs from 'dayjs'
+import dayTH from "dayjs/locale/th"
+import buddhistEra from 'dayjs/plugin/buddhistEra'
+import th from 'antd/es/date-picker/locale/th_TH'
+import moment from 'moment'
+dayjs.locale(dayTH);
+
+dayjs.extend(buddhistEra);
 
 
 function Login() {
@@ -18,8 +33,11 @@ function Login() {
     const [loading, setLoading] = useState(false)
     const [providerProfile, setProviderProfile] = useState([])
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [addUserByProviderID, setAddUserByProviderID] = useState(false)
     const [value, setValue] = useState('');
     const [accToken, setAccToken] = useState('')
+    const [formCreateUser] = Form.useForm()
+    const cDate = new Date().toISOString().slice(0, 10);
 
     const roleBaseRedirect = (level) => {
         if (level === '1') {
@@ -111,6 +129,7 @@ function Login() {
 
     const cancelModal = () => {
         setIsModalOpen(false)
+        setAddUserByProviderID(false)
     }
 
     const onRadioChange = (e) => {
@@ -122,10 +141,10 @@ function Login() {
         email: providerProfile.email,
         firstname: providerProfile.firstname_th,
         lastname: providerProfile.lastname_th,
-        fullname: providerProfile.name_th, 
+        fullname: providerProfile.name_th,
         hospital_code: value.hcode,
         position_id: value.position_id,
-        position: value.position
+        position: value.position,
     }
 
     if (value) {
@@ -150,12 +169,58 @@ function Login() {
             })
             .catch(err => {
                 setLoading(false)
-                console.log(err.response.data)
-                toast.warning(err.response.data)
+                console.log(err.response.status)
+                // toast.warning(err.response.data)
+                if (err.response.status === 400) {
+                    setAddUserByProviderID(true)
+                }
             })
             .finally(() => setLoading(false))
     }
 
+    useEffect(() => {
+        formCreateUser.setFieldsValue({
+            hospital_code: value.hcode,
+            fullname: providerProfile.name_th,
+            job_position: value.position,
+            email: providerProfile.email,
+            username: providerProfile.firstname_en,
+            password: providerProfile.firstname_en + '#' + value.hcode,
+            level: '1',
+            d_create: dayjs(cDate, 'YYYY-MM-DD')
+        })
+    })
+    const saveUser = (fieldValue) => {
+        const values = {
+            ...fieldValue,
+            'd_create': fieldValue['d_create'].format('YYYY-MM-DD')
+        }
+        console.log('UserByProvider: ', values)
+        createUserByProviderID(values)
+            .then(res=>{
+                toast.success(res.data)
+                setAddUserByProviderID(false)
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+    }
+
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed', errorInfo)
+    }
+
+    const buddhistLocale = {
+        ...th,
+        lang: {
+            ...th.lang,
+            fieldDateFormat: "DD MMMM BBBB",
+            monthFormat: 'MMMM',
+            yearFormat: 'BBBB',
+            cellYearFormat: "BBBB",
+            today: 'วันนี้'
+        }
+    }
 
 
     return (
@@ -258,6 +323,172 @@ function Login() {
                                 }
                             </Space>
                         </Radio.Group>
+                    </Modal>
+
+                    <Modal
+                        title={
+                            <div
+                                style={{
+                                    justifyContent: 'center',
+                                    display:'flex',
+                                    marginLeft:'auto',
+                                    marginRight: 'auto'
+                                }}>
+                                <ExclamationCircleFilled style={{ color: 'orange' }} /> &nbsp;
+                                <spa>ไม่พบข้อมูลในระบบ ลงทะเบียนเข้าใช้งานหรือไม่?</spa>
+                            </div>
+                        }
+                        open={addUserByProviderID}
+                        onOk={formCreateUser.submit}
+                        onCancel={cancelModal}
+                        width={520}
+                        style={{ top: 20 }}
+                    >
+                        <hr />
+                        <Form
+                            form={formCreateUser}
+                            name='formCreateUser'
+                            layout='vertical'
+                            onFinish={saveUser}
+                            onFinishFailed={onFinishFailed}
+                        >
+                            <Form.Item
+                                name='hospital_code'
+                                label={<b>หน่วยบริการ :</b>}
+                                rules={[
+                                    {
+                                        required: true
+                                    }
+                                ]}
+                                style={{ marginBottom: '10px' }}
+                            >
+                                <Select
+                                    options={[
+                                        {
+                                            value: value.hcode,
+                                            label: value.hname_th + ' [' + value.hcode + ']'
+                                        }
+                                    ]}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name='fullname'
+                                label={<b>ชื่อ-นามสกุล</b>}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'กรุณาระบุชื่อ-สกุลผู้ใช้งาน'
+                                    }
+                                ]}
+                                style={{ marginBottom: '15px' }}
+                            >
+                                <Input placeholder='กรุณาระบุชื่อ-สกุลผู้ใช้งาน...' />
+                            </Form.Item>
+                            <Form.Item
+                                name='job_position'
+                                label={<b>ตำแหน่ง :</b>}
+                                rules={[
+                                    {
+                                        required: true
+                                    }
+                                ]}
+                                style={{ marginBottom: '10px' }}
+                            >
+                                <Select
+                                    options={[
+                                        {
+                                            value: value.position,
+                                            label: value.position + ' [' + value.position_id + ']'
+                                        }
+                                    ]}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name='email'
+                                label={<b>อีเมล</b>}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'กรุณาระบุอีเมล'
+                                    }
+                                ]}
+                                style={{ marginBottom: '15px' }}
+                            >
+                                <Input placeholder='กรุณาระบุอีเมล...' />
+                            </Form.Item>
+                            <Form.Item
+                                name='username'
+                                label={<b>Username</b>}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'กรุณาระบุ Username'
+                                    },
+                                    {
+                                        pattern: /^(?=.*[a-z])(?=.*[A-Z])/,
+                                        message: 'Username ต้องเป็นภาษาอังกฤษ a-z A-Z เท่านั้น!'
+                                    }
+                                ]}
+                                style={{ marginBottom: '15px' }}
+                            >
+                                <Input placeholder='กรุณาระบุ Username...' />
+                            </Form.Item>
+                            <Form.Item
+                                name='password'
+                                label={<b>Password</b>}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'กรุณาระบุ Password !'
+                                    },
+                                    {
+                                        pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,}$/,
+                                        message: 'Password ต้องเป็นภาษาอังกฤษ ประกอบด้วยตัวเลข 1 ตัว ตัวพิมพ์ใหญ่ 1 ตัว ตัวพิมพ์เล็ก และ อักขระพิเศษ(!@#$%^&*) รวมกัน 8 ตัวขึ้นไป!'
+                                    }
+                                ]}
+                                style={{ marginBottom: '15px' }}
+                            >
+                                <Input.Password placeholder='Password' />
+                            </Form.Item>
+                            <Form.Item
+                                name='level'
+                                label={<b>Level</b>}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'กรุณาระบุ Level'
+                                    }
+                                ]}
+                                style={{ marginBottom: '15px' }}
+                            >
+                                <Select
+                                    placeholder='กรุณาระบุ Level...'
+                                    options={[
+                                        {
+                                            value: '1',
+                                            label: <span style={{ color: '#098703' }}>Responder(1)</span>
+                                        },
+                                        // {
+                                        //     value: '2',
+                                        //     label: <span style={{ color: '#034b87' }}>Approver(2)</span>
+                                        // }
+                                    ]}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name='d_create'
+                                label={<b>วันที่เพิ่มผู้ใช้</b>}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'กรุณาระบุวันที่เพิ่มผู้ใช้'
+                                    }
+                                ]}
+                                style={{ marginBottom: '15px' }}
+                            >
+                                <DatePicker locale={buddhistLocale} style={{ width: '100%' }} disabled />
+                            </Form.Item>
+                        </Form>
                     </Modal>
                 </Col>
             </Row>

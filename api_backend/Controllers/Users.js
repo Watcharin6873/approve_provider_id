@@ -38,6 +38,41 @@ exports.createUser = async (req, res) => {
     }
 }
 
+exports.createUserByProviderID = async(req, res)=>{
+    try {
+        //Code
+        const d_create = moment(req.body.d_create).format('YYYY-MM-DD hh:mm:ss')
+        const sql = "INSERT INTO `app_users` (`hospital_code`, `fullname`, `job_position`, `email`, `username`, `password`, `password_hash`,`level`,`d_create`) VALUES (?)";
+        bcrypt.hash(req.body.password, salt, (err, hash) => {
+            if (err) {
+                console.log(err)
+            }
+
+            const values = [
+                req.body.hospital_code,
+                req.body.fullname,
+                req.body.job_position,
+                req.body.email,
+                req.body.username,
+                req.body.password,
+                hash,
+                req.body.level,
+                d_create
+            ]
+            conn.query(sql, [values], (err, results) => {
+                if (err) throw err;
+                if (results){
+                    res.status(200).send('เพิ่มข้อมูลผู้ใช้งานสำเร็จ!')
+                }
+            }
+            )
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error!!')
+    }
+}
+
 exports.getListUsers = async (req, res) => {
     try {
         //Code

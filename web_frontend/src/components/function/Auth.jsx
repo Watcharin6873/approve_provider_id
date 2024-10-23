@@ -12,6 +12,12 @@ export const createUser = async (token, values) =>
         }
     )
 
+
+//CreateUser by ProviderID
+export const createUserByProviderID = async (values) =>
+    await axios.post(import.meta.env.VITE_APP_API + '/createUserByProviderID', values)
+
+
 //Get List User
 export const getListUsers = async (token) =>
     await axios.get(import.meta.env.VITE_APP_API + '/getListUsers',
