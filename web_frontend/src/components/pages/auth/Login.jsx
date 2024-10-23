@@ -3,13 +3,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import { LockOutlined, UserOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { Col, Row, Button, Form, Input, Modal, Radio, Space, Select, DatePicker } from 'antd';
 import providerid from '../../../assets/Plogo-f6506bc1.png';
-import { 
-    login, 
-    getTokenHealthID, 
-    getTokenProviderID, 
-    getProviderProfile, 
-    loginByProviderId, 
-    createUserByProviderID 
+import {
+    login,
+    getTokenHealthID,
+    getTokenProviderID,
+    getProviderProfile,
+    loginByProviderId,
+    createUserByProviderID
 } from '../../function/Auth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -197,11 +197,11 @@ function Login() {
         }
         console.log('UserByProvider: ', values)
         createUserByProviderID(values)
-            .then(res=>{
+            .then(res => {
                 toast.success(res.data)
                 setAddUserByProviderID(false)
             })
-            .catch(err=>{
+            .catch(err => {
                 console.log(err)
             })
     }
@@ -307,18 +307,38 @@ function Login() {
                         </div>
                     </div>
                     <Modal
-                        title='เลือกหน่วยบริการที่ต้องการล็อกอิน'
+                        title={
+                            <div
+                                style={{
+                                    justifyContent: 'center',
+                                    display: 'flex',
+                                    marginLeft: 'auto',
+                                    marginRight: 'auto'
+                                }}
+                            >
+                                <ExclamationCircleFilled style={{ color: 'orange' }} /> &nbsp;
+                                <span>เลือกหน่วยบริการที่ต้องการล็อกอิน</span>
+                            </div>
+                        }
                         open={isModalOpen}
                         onOk={onOk}
                         onCancel={cancelModal}
                         footer={null}
+                        width={400}
+                        style={{top: 20}}
                     >
-
+                        <hr />
                         <Radio.Group onChange={onRadioChange}>
                             <Space direction='vertical'>
                                 {
                                     listProviderHosp && listProviderHosp.map((item, k) => (
-                                        <Radio key={k} value={item}>{item.hname_th}</Radio>
+                                        <Radio.Button 
+                                            key={k} 
+                                            value={item} 
+                                            style={{ width: '350px' }}
+                                        >
+                                            {item.hname_th + ' [' + item.hcode + ']'}
+                                        </Radio.Button>
                                     ))
                                 }
                             </Space>
@@ -330,12 +350,13 @@ function Login() {
                             <div
                                 style={{
                                     justifyContent: 'center',
-                                    display:'flex',
-                                    marginLeft:'auto',
+                                    display: 'flex',
+                                    marginLeft: 'auto',
                                     marginRight: 'auto'
-                                }}>
+                                }}
+                            >
                                 <ExclamationCircleFilled style={{ color: 'orange' }} /> &nbsp;
-                                <spa>ไม่พบข้อมูลในระบบ ลงทะเบียนเข้าใช้งานหรือไม่?</spa>
+                                <span>ไม่พบข้อมูลในระบบ ลงทะเบียนเข้าใช้งานหรือไม่?</span>
                             </div>
                         }
                         open={addUserByProviderID}
