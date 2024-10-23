@@ -51,7 +51,8 @@ function Login() {
             })
             .catch(err => {
                 setLoading(false)
-                console.log(err)
+                console.log(err.response.data)
+                toast.warning(err.response.data)
             })
             .finally(() => setLoading(false))
     };
@@ -149,7 +150,8 @@ function Login() {
             })
             .catch(err => {
                 setLoading(false)
-                console.log(err)
+                console.log(err.response.data)
+                toast.warning(err.response.data)
             })
             .finally(() => setLoading(false))
     }
