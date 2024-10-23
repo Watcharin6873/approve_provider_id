@@ -124,8 +124,7 @@ function Login() {
         fullname: providerProfile.name_th, 
         hospital_code: value.hcode,
         position_id: value.position_id,
-        position: value.position,
-        level: 1
+        position: value.position
     }
 
     if (value) {

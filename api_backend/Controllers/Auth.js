@@ -48,9 +48,9 @@ exports.login = async (req, res) => {
 exports.loginByProviderId = async (req, res) => {
     try {
         //Code
-        const sql = "SELECT * FROM app_users WHERE fullname LIKE ? AND hospital_code=? AND level=?";
+        const sql = "SELECT * FROM app_users WHERE fullname LIKE ? AND hospital_code=?";
 
-        conn.query(sql, ['%'+req.body.fullname+'%', req.body.hospital_code, req.body.level], (err, data) => {
+        conn.query(sql, ['%'+req.body.fullname+'%', req.body.hospital_code], (err, data) => {
             if (err) throw err;
             if (data.length > 0) {
                 const payload = {
