@@ -59,9 +59,9 @@ function MenuList({ darkTheme }) {
                             <Menu.Item key='/responder/add-request-provider' onClick={(e) => setCurrent(e.key)} icon={<AppstoreAddOutlined />}>
                                 <Link to='/responder/add-request-provider' style={{ textDecoration: 'none' }}>เพิ่มคำขอใช้ API ProviderID</Link>
                             </Menu.Item>
-                            <Menu.Item key='/responder/add-users' onClick={(e) => setCurrent(e.key)} icon={<UserAddOutlined />}>
+                            {/* <Menu.Item key='/responder/add-users' onClick={(e) => setCurrent(e.key)} icon={<UserAddOutlined />}>
                                 <Link to='/responder/add-users' style={{ textDecoration: 'none' }}>เพิ่มผู้ใช้งาน</Link>
-                            </Menu.Item>
+                            </Menu.Item> */}
                         </>
                         :
                         <>
