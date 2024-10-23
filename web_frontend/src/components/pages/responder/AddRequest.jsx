@@ -213,7 +213,7 @@ function AddRequest() {
         console.log(user.token, values)
         createProviderIDRequest(user.token, values)
             .then(res => {
-                toast.success(res.data, { theme: 'colored' })
+                toast.success(res.data)
                 setAddRequestModal(false)
                 loadListRequest(user.token)
             })
@@ -264,7 +264,7 @@ function AddRequest() {
         console.log(user.token, requestDetail.req_id, values)
         updateProviderRequest(user.token, requestDetail.req_id, values)
             .then(res => {
-                toast.success(res.data, { theme: 'colored' })
+                toast.success(res.data)
                 setEditRequestModal(false)
                 loadListRequest(user.token)
             })

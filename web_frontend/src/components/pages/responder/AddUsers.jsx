@@ -297,7 +297,7 @@ function AddUsers() {
     console.log(values)
     updateUser(user.token, editData.user_id, values)
       .then(res => {
-        toast.success(res.data, { theme: 'colored' })
+        toast.success(res.data)
         setEditUsersModal(false)
         loadListUsers(user.token)
       })

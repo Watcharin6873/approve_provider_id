@@ -1,11 +1,13 @@
 const express = require('express')
 const router = express.Router()
 
-const {login, currentUser} = require('../Controllers/Auth')
+const {login,loginByProviderId, currentUser} = require('../Controllers/Auth')
 const {auth, approverCheck} = require('../Middleware/Auth')
 
 
 router.post('/login', login)
+
+router.post('/loginByProviderId', loginByProviderId)
 
 router.post('/currentResponder', auth, currentUser)
 

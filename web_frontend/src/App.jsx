@@ -32,7 +32,6 @@ function App() {
           payload:{
             token: idtoken,
             hospital_code: res.data[0].hospital_code,
-            user_id: res.data[0].user_id,
             username: res.data[0].username,
             fullname: res.data[0].fullname,
             level: res.data[0].level
